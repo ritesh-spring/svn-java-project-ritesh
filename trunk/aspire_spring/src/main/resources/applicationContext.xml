@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+	<bean id="gs1" class="org.spire.ritesh.hellospring.GreetingServiceImpl"
+		scope="singleton" lazy-init="default">
+		<!-- Setter Based IOC -->
+		<property name="greeting">
+			<value>Good Morning Setter IOC</value>
+		</property>
+	</bean>
+	<bean id="gs2" class="org.spire.ritesh.hellospring.GreetingServiceImpl"
+		scope="singleton" lazy-init="default">
+		<!-- Setter Based IOC -->
+		<constructor-arg>
+			<value>Good Morning Constructor IOC</value>
+		</constructor-arg>
+	</bean>
+	<!-- Proxy Based AOP Example -->
+	<bean id="target" class="org.spire.ritesh.proxyaop.Instrumentalist">
+		<property name="instrument">
+			<!-- Inner Bean -->
+			<bean class="org.spire.ritesh.proxyaop.Guitar"></bean>
+		</property>
+	</bean>
+	<!-- Advice -->
+	<bean id="audience" class="org.spire.ritesh.proxyaop.Audience"></bean>
+	<!-- Proxy Class -->
+	<bean id="proxybean" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="target">
+			<ref bean="target" />
+		</property>
+		<property name="interceptorNames">
+			<array>
+				<value>audience</value>
+			</array>
+		</property>
+		<property name="proxyInterfaces">
+			<array>
+				<value>org.spire.ritesh.proxyaop.Performer</value>
+			</array>
+		</property>
+	</bean>
+</beans>

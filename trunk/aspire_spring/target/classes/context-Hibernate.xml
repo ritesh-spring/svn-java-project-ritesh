@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+         http://www.springframework.org/schema/context 
+         http://www.springframework.org/schema/context/spring-context-4.0.xsd
+         http://www.springframework.org/schema/tx 
+         http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+         http://www.springframework.org/schema/util 
+         http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+
+	<context:component-scan base-package="org.ritesh.hibernate" />
+	<!-- <context:property-placeholder location="classpath:*./connection.properties" file-encoding="UTF-8" ignore-unresolvable="true" /> -->
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<array>
+				<value>classpath:connection.properties</value>
+				<value>classpath:hibernate.properties</value>
+			</array>
+		</property>
+		<property name="ignoreUnresolvablePlaceholders" value="true"/>
+	</bean>
+
+	<!-- <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" 
+		lazy-init="false"> <property name="driverClassName" value="${driver_class_name}" 
+		/> <property name="url" value="${url}" /> <property name="username" value="${username}" 
+		/> <property name="password" value="${password}" /> <property name="initialSize" 
+		value="${initial_size}" /> <property name="maxActive" value="${max_size}" 
+		/> </bean> -->
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		lazy-init="false" p:driverClassName="${driver_class_name}" p:url="${url}"
+		p:username="${username}" p:password="${password}" p:initialSize="${initial_size}"
+		p:maxActive="${max_size}" />
+
+	<bean name="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		 <property name="dataSource" ref="dataSource"></property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+				<prop key="hibernate.use_sql_comments">${hibernate.use_sql_comments}</prop>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="hibernate.transaction.factory_class">${hibernate.transaction.factory_class}
+				</prop>
+			</props>
+		</property>
+		<property name="mappingResources">
+			<array>
+				<value>${hibernate.mapping_customer}</value>
+			</array>
+		</property>
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="customerDao" class="org.ritesh.hibernate.dao.CustomerDaoImpl">
+		<!-- <property name="sessionFactory" ref="sessionFactory" /> -->
+	</bean>
+
+	<!-- <bean id="customerService" class="org.ritesh.hibernate.dao.CustomerServiceImpl"> 
+		<property name="customerDaoImpl" ref="customerDaoImpl" /> </bean> -->
+</beans>
